@@ -18,7 +18,7 @@ class Wait implements Runnable{
 	public Wait(Object lock) {
 		this.lock = lock;
 	}
-	@Override
+	//@Override
 	public void run() {
 		synchronized(lock){
 			System.out.println(Thread.currentThread().getName() + " is running ");
@@ -38,7 +38,7 @@ class Notify implements Runnable{
 	public Notify(Object lock){
 		this.lock = lock;
 	}
-	@Override
+	//@Override
 	public void run() {
 		synchronized(lock){
 			System.out.println(Thread.currentThread().getName() + " is running");

@@ -7,10 +7,18 @@ public class ConcurrentStack{
 	
 	public static void main(String[] args){
 		ConcurrentStack q = new ConcurrentStack(5);
-		Thread t1 = new Thread(new GetThread(q), "getT");
-		Thread t2 = new Thread(new SetThread(q), "setT");
+		Thread t1 = new Thread(new GetThread(q), "getT1");
+		Thread t2 = new Thread(new GetThread(q), "getT2");
+		Thread t3 = new Thread(new GetThread(q), "getT3");
+		Thread t4 = new Thread(new GetThread(q), "getT4");
+		Thread t5 = new Thread(new GetThread(q), "getT5");
+		Thread st1 = new Thread(new SetThread(q), "setT");
 		t1.start();
 		t2.start();
+		t3.start();
+		t4.start();
+		t5.start();
+		st1.start();
 	}
 	
 	public ConcurrentStack(int length){
@@ -23,10 +31,12 @@ public class ConcurrentStack{
 	public int get(){
 		int value = 0;
 		synchronized(lock){
+			// 通知其他阻塞线程可以竞争锁了
 			lock.notifyAll();
 			if(currentSize <= 0){
 				try {
 					System.out.println(Thread.currentThread().getName() + " begin to wait ...");
+					// 当前线程阻塞, 释放锁
 					lock.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -44,9 +54,11 @@ public class ConcurrentStack{
 	
 	public void set(int data){
 		synchronized(lock){
+			// 通知其他线程可以竞争锁了
 			lock.notifyAll();
 			if(currentSize >= queue.length){
 				try {
+					// 阻塞, 并释放锁
 					lock.wait();
 					System.out.println(Thread.currentThread().getName() + " begin to wait() ...");
 				} catch (InterruptedException e) {
