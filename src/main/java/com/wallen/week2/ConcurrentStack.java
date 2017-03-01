@@ -28,11 +28,9 @@ public class ConcurrentStack{
 		}
 	}
 	
-	public int get(){
-		int value = 0;
+	public void get(){
+		int value = -1;
 		synchronized(lock){
-			// 通知其他阻塞线程可以竞争锁了
-			lock.notifyAll();
 			if(currentSize <= 0){
 				try {
 					System.out.println(Thread.currentThread().getName() + " begin to wait ...");
@@ -44,18 +42,18 @@ public class ConcurrentStack{
 			}else{
 				System.out.print("get queue: ");
 				printQueue();
-				value = queue[--currentSize];
+				// 通知其他阻塞线程可以竞争锁了, 但不会马上释放锁
+				lock.notifyAll();
+				System.out.println(queue[--currentSize]);	
 				
 			}
 		}
 		
-		return value;
+		//return value;
 	}
 	
 	public void set(int data){
 		synchronized(lock){
-			// 通知其他线程可以竞争锁了
-			lock.notifyAll();
 			if(currentSize >= queue.length){
 				try {
 					// 阻塞, 并释放锁
@@ -68,6 +66,8 @@ public class ConcurrentStack{
 				queue[currentSize++] = data;
 				System.out.print("set queue: ");
 				printQueue();
+				// 通知其他线程可以竞争锁了, 但不会马上释放锁
+				lock.notifyAll();
 			}
 		}
 	}
@@ -89,7 +89,7 @@ class GetThread implements Runnable{
 	}
 	public void run() {
 		while(true){
-			System.out.println("GET ---- " + q.get());
+			q.get();
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
