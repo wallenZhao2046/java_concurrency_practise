@@ -8,16 +8,16 @@ public class ConcurrentStack{
 	public static void main(String[] args){
 		ConcurrentStack q = new ConcurrentStack(5);
 		Thread t1 = new Thread(new GetThread(q), "getT1");
-		Thread t2 = new Thread(new GetThread(q), "getT2");
-		Thread t3 = new Thread(new GetThread(q), "getT3");
-		Thread t4 = new Thread(new GetThread(q), "getT4");
-		Thread t5 = new Thread(new GetThread(q), "getT5");
+//		Thread t2 = new Thread(new GetThread(q), "getT2");
+//		Thread t3 = new Thread(new GetThread(q), "getT3");
+//		Thread t4 = new Thread(new GetThread(q), "getT4");
+//		Thread t5 = new Thread(new GetThread(q), "getT5");
 		Thread st1 = new Thread(new SetThread(q), "setT");
 		t1.start();
-		t2.start();
-		t3.start();
-		t4.start();
-		t5.start();
+//		t2.start();
+//		t3.start();
+//		t4.start();
+//		t5.start();
 		st1.start();
 	}
 	
@@ -89,9 +89,9 @@ class GetThread implements Runnable{
 	}
 	public void run() {
 		while(true){
-			System.out.println(q.get());
+			System.out.println("GET ---- " + q.get());
 			try {
-				Thread.sleep(0);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -109,17 +109,17 @@ class SetThread implements Runnable{
 		this.q = q;
 	}
 	public void run() {
-		while(true){
-			for(int i = 1; i <= 10; i++){
+		//while(true){
+			for(int i = 1; i <= 100; i++){
 				q.set(i);
 				try {
-					Thread.sleep(0);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-		}
+		//}
 	}
 	
 }
