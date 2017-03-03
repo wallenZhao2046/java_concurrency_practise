@@ -4,6 +4,7 @@ public class ConcurrentQueue {
 	private int[] queue; 
 	private int queueHeader;
 	private int queueTailer;
+	private int queueSize;
 	private Object lock = new Object();
 	
 	public static void main(String[] args){
@@ -23,66 +24,82 @@ public class ConcurrentQueue {
 	}
 	
 	public ConcurrentQueue(int size){
-		if(size > 0){
-			queue = new int[size];
+		if(size <= 0){
+			throw new IllegalArgumentException("queue size should be a positive number");
 		}
+		queue = new int[size];
+		queueHeader = 0;
+		queueTailer = -1;
+		queueSize = 0;
 	}
 	
 	public void add(int data){
+		System.out.println("----------------- begin add --");
+		printQueue();
 		synchronized(lock){
-			lock.notifyAll();
-			printQueue();
-			if(queueTailer >= queue.length - 1 && queueHeader != 0){
-					queueTailer = 0;
-					queue[queueTailer] = data;
-			}else{
-				if(queueTailer != queueHeader - 1 && queueTailer != queue.length - 1){
-					queue[++queueTailer] = data;
-				}else{
-					try {
-						System.out.println("queue is full, waiting for poll...");
-						lock.wait();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			
+			if(queueSize == queue.length){
+				try {
+					System.out.println("queue is full, waiting for poll...");
+					lock.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+			}else{
+				lock.notifyAll();
+				queueTailer = movePointer(queueTailer);
+				queue[queueTailer] = data;
+				queueSize++;
+				printQueue();
 			}
 		}
+		System.out.println("-- end add ---------------------------");
 	}
 	
 	public int poll(){
+		System.out.println("------------------- begin poll --");
+		printQueue();
 		int result = -1;
 		synchronized(lock){
-			lock.notifyAll();
-			printQueue();
-			if( queueHeader >= queue.length - 1 && queueTailer != 0){
-				result = queue[queueHeader];
-				queueHeader = 0;
-			}else{
-				if(queueHeader != queueTailer - 1 && queueHeader != queue.length -1){
-					result = queue[queueHeader++];
-				}else{
-					try {
-						System.out.println("queue is empty, waiting for add ...");
-						lock.wait();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			if(queueSize == 0){
+				try {
+					System.out.println("queue is empty, waiting for add ...");
+					lock.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+			}else{
+				lock.notifyAll();
+				result = queue[queueHeader];
+				queueHeader = movePointer(queueHeader);	
+				queueSize--;
 			}
 		}
+		printQueue();
+		System.out.println("-- end poll ----------------------------");
 		return result;
 	}
 	
-	public void printQueue(){
-		
-		System.out.println(Thread.currentThread().getName() + "Header: " + queueHeader + " Tailer: " + queueTailer);
-		for(int i = 0; i < queue.length; i++){
-			System.out.print(queue[i] + " -> ");
+	private int movePointer(int pointer){
+		if(pointer >= queue.length - 1){
+			pointer = 0;
+		}else{
+			pointer++;
 		}
-		System.out.println();
+		return pointer;
+	}
+	
+	private void printQueue(){
+		synchronized(lock){
+			System.out.println(Thread.currentThread().getName() + " Header: " + queueHeader + " Tailer: " + queueTailer);
+			for(int i = 0; i < queue.length; i++){
+				System.out.print(queue[i] + " -> ");
+			}
+			System.out.println();
+		}
+		
 	}
 }
 
