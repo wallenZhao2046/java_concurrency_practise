@@ -1,5 +1,6 @@
 package com.wallen.week2;
 
+// TODO: need to fix code
 public class ConcurrentStack{
 	private int[] queue;
 	private int currentSize;
