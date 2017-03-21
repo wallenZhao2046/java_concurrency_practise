@@ -1,4 +1,4 @@
-package com.wallen.week4;
+package com.wallen.atomic;
 
 import java.util.HashSet;
 import java.util.Set;

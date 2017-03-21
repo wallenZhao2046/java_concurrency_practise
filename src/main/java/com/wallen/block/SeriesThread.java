@@ -1,4 +1,4 @@
-package com.wallen.week2;
+package com.wallen.block;
 
 import java.util.Date;
 

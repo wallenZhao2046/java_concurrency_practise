@@ -1,4 +1,4 @@
-package com.wallen.week4;
+package com.wallen.atomic;
 
 public class CommonStack<E> {
 	

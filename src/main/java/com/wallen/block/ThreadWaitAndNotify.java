@@ -1,4 +1,4 @@
-package com.wallen.week2;
+package com.wallen.block;
 
 public class ThreadWaitAndNotify {
 	

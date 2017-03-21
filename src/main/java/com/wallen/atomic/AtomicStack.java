@@ -1,4 +1,4 @@
-package com.wallen.week4;
+package com.wallen.atomic;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicIntegerArray;
